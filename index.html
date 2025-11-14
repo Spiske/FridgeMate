@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FridgeMate — shared fridge for dorms</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+        crossorigin="anonymous">
+</head>
+<body class="bg-light">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">🧊 FridgeMate</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+              aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item me-2">
+            <a class="btn btn-outline-primary" href="#signin">Sign in</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-primary" href="#signup">Sign up</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="py-5 bg-primary text-white">
+    <div class="container text-center">
+      <h1 class="display-3 fw-bold mb-2">FridgeMate</h1>
+      <p class="lead mb-4">
+        A shared fridge app for dorm students. Track items, costs, expiration dates and who ate what. Reduce waste, share costs, and keep the fridge honest.
+      </p>
+
+      <div class="d-flex justify-content-center gap-3">
+        <a id="signup" class="btn btn-light btn-lg fw-semibold" href="#">Get started — Sign up</a>
+        <a id="signin" class="btn btn-outline-light btn-lg" href="#">Sign in</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Features (horizontal grid that reads like a horizontal list on wide screens) -->
+  <section class="py-5">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+          <h2 class="h3 fw-bold mb-1">What FridgeMate does</h2>
+          <p class="text-muted mb-0">Simple features built for shared dorm fridges — collaboration, cost-splitting, and less food waste.</p>
+        </div>
+        <small class="text-muted">Designed for university dorms</small>
+      </div>
+
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="mb-3 display-6">🧊</div>
+              <h5 class="card-title">Shared inventory</h5>
+              <p class="card-text text-muted flex-grow-1">
+                Add items to the fridge with name, cost, quantity and expiration date — everyone can see what's inside.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="mb-3 display-6">🧾</div>
+              <h5 class="card-title">Track purchases & costs</h5>
+              <p class="card-text text-muted flex-grow-1">
+                Record who bought what and split costs easily so reimbursements are fair and clear.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="mb-3 display-6">⏰</div>
+              <h5 class="card-title">Expiry alerts</h5>
+              <p class="card-text text-muted flex-grow-1">
+                See upcoming expirations and reduce waste — the app highlights what needs to be eaten soon.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="mb-3 display-6">🍽️</div>
+              <h5 class="card-title">Who ate what</h5>
+              <p class="card-text text-muted flex-grow-1">
+                Log consumption so it's clear who used shared items — useful for fairness and tracking.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="mb-3 display-6">🤝</div>
+              <h5 class="card-title">Cost sharing</h5>
+              <p class="card-text text-muted flex-grow-1">
+                Split bills, settle up with housemates, and keep tabs on who owes what — no awkwardness.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="mb-3 display-6">📊</div>
+              <h5 class="card-title">Simple reports</h5>
+              <p class="card-text text-muted flex-grow-1">
+                Quick overviews of spending, frequently eaten items, and waste statistics for the group.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="mb-3 display-6">🔔</div>
+              <h5 class="card-title">Notifications</h5>
+              <p class="card-text text-muted flex-grow-1">
+                Reminders for expiring goods or items that need restocking so someone can take action.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="mb-3 display-6">🌍</div>
+              <h5 class="card-title">Community-friendly</h5>
+              <p class="card-text text-muted flex-grow-1">
+                Built around small communities — ideal for dorm floors, shared flats, or co-living spaces.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works quick steps -->
+  <section class="py-4 bg-white border-top">
+    <div class="container">
+      <h3 class="h5 fw-bold mb-3">How it works</h3>
+      <div class="row row-cols-1 row-cols-md-3 g-3">
+        <div class="col">
+          <div class="card h-100">
+            <div class="card-body">
+              <h6 class="fw-semibold">1. Create or join a fridge</h6>
+              <p class="mb-0 text-muted">One person creates the shared fridge and invites housemates by link or code.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card h-100">
+            <div class="card-body">
+              <h6 class="fw-semibold">2. Add items & costs</h6>
+              <p class="mb-0 text-muted">Add items when you buy them — name, quantity, cost and expiry.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card h-100">
+            <div class="card-body">
+              <h6 class="fw-semibold">3. Share, eat, and settle</h6>
+              <p class="mb-0 text-muted">Log who used items, split costs, and get reminders before things expire.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-4 mt-5">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div class="text-muted small">© <span id="year"></span> FridgeMate</div>
+      <div>
+        <a class="link-secondary me-3" href="#">Privacy</a>
+        <a class="link-secondary" href="#">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // small nicety: fill in year without custom CSS
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-ltrjvnR4/J57n3U6K7Z2q7N3a6l4E1fQxPjB5u3N5Kfyzq7q8k2m1qQ7f6k9Y1NQ"
+          crossorigin="anonymous"></script>
+</body>
+</html>
