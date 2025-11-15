@@ -12,30 +12,48 @@
 </head>
 <body class="bg-light">
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark border-bottom" style="background-color:#fe5a5a;">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="#">🧊 FridgeMate</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
-              aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+        <!-- Brand + links next to logo -->
+        <div class="d-flex align-items-center gap-4">
+        <!-- Brand (image) -->
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="images/logo.png" alt="FridgeMate" width="140" height="55" class="d-inline-block align-text-top">
+            <span class="visually-hidden">FridgeMate</span>
+        </a>
 
-      <div class="collapse navbar-collapse" id="navMenu">
-        <ul class="navbar-nav ms-auto align-items-lg-center">
-          <li class="nav-item me-2">
-            <a class="btn btn-outline-primary" href="#signin">Sign in</a>
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-primary" href="#signup">Sign up</a>
-          </li>
+        <!-- Text links next to the logo -->
+        <ul class="navbar-nav flex-row align-items-center">
+            <li class="nav-item">
+            <a class="nav-link px-2 text-white" href="/index.html" aria-current="page">Home</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link px-2 text-white" href="/FridgeList.html">My Fridges</a>
+            </li>
         </ul>
-      </div>
+        </div>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+                aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+            <li class="nav-item me-2">
+            <a class="btn btn-outline-light" href="#signin">Sign in</a>
+            </li>
+            <li class="nav-item">
+            <a class="btn btn-light" href="#signup">Sign up</a>
+            </li>
+        </ul>
+        </div>
     </div>
-  </nav>
+    </nav>
 
   <!-- Hero -->
-  <header class="py-5 bg-primary text-white">
+  <header class="py-5 text-white" style="background-color:#f07575;">
     <div class="container text-center">
       <h1 class="display-3 fw-bold mb-2">FridgeMate</h1>
       <p class="lead mb-4">

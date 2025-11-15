@@ -10,32 +10,42 @@
   <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark border-bottom" style="background-color:#fe5a5a;">
-        <div class="container">
-            <!-- Brand: image replaces text; hidden text kept for accessibility -->
-            <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="images/logo.png"
-                alt="FridgeMate"
-                width="140" height="55"
-                class="d-inline-block align-text-top me-2">
+    <div class="container">
+        <!-- Brand + links next to logo -->
+        <div class="d-flex align-items-center gap-4">
+        <!-- Brand (image) -->
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="images/logo.png" alt="FridgeMate" width="140" height="55" class="d-inline-block align-text-top">
             <span class="visually-hidden">FridgeMate</span>
-            </a>
+        </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
-                    aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navMenu">
-            <ul class="navbar-nav ms-auto align-items-lg-center">
-                <li class="nav-item me-2">
-                <a class="btn btn-outline-light" href="#signin">Sign in</a>
-                </li>
-                <li class="nav-item">
-                <a class="btn btn-light" href="#signup">Sign up</a>
-                </li>
-            </ul>
-            </div>
+        <!-- Text links next to the logo -->
+        <ul class="navbar-nav flex-row align-items-center">
+            <li class="nav-item">
+            <a class="nav-link px-2 text-white" href="/index.html" aria-current="page">Home</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link px-2 text-white" href="/FridgeList.html">My Fridges</a>
+            </li>
+        </ul>
         </div>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+                aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+            <li class="nav-item me-2">
+            <a class="btn btn-outline-light" href="#signin">Sign in</a>
+            </li>
+            <li class="nav-item">
+            <a class="btn btn-light" href="#signup">Sign up</a>
+            </li>
+        </ul>
+        </div>
+    </div>
     </nav>
 
     <!-- Fridge list (centered with comfortable margins) -->
@@ -44,7 +54,7 @@
       <div class="container">
         <p class="fs-3">My Fridges</p>
         <!-- Fridge card 1 -->
-        <a href="#" class="text-decoration-none text-body">
+        <a href="Fridge.html" class="text-decoration-none text-body">
           <div class="card mb-3 w-100 shadow-sm">
             <div class="card-body d-flex justify-content-between align-items-center">
               <div>
@@ -59,7 +69,7 @@
         </a>
 
         <!-- Fridge card 2 -->
-        <a href="#" class="text-decoration-none text-body">
+        <a href="Fridge.html" class="text-decoration-none text-body">
           <div class="card mb-3 w-100 shadow-sm">
             <div class="card-body d-flex justify-content-between align-items-center">
               <div>
@@ -74,7 +84,7 @@
         </a>
 
         <!-- Fridge card 3 -->
-        <a href="#" class="text-decoration-none text-body">
+        <a href="Fridge.html" class="text-decoration-none text-body">
           <div class="card mb-3 w-100 shadow-sm">
             <div class="card-body d-flex justify-content-between align-items-center">
               <div>
@@ -89,7 +99,7 @@
         </a>
 
         <!-- Create a Fridge card (last) -->
-        <a href="#" class="text-decoration-none text-body">
+        <a href="Fridge.html" class="text-decoration-none text-body">
           <div class="card mb-3 w-100 shadow-sm" style="border-color:#ff6767;">
             <div class="card-body d-flex justify-content-between align-items-center">
               <div>
