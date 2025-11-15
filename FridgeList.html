@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your Fridges — Shared Fridge App (placeholder)</title>
+    <!-- Bootstrap 5.0 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark border-bottom" style="background-color:#fe5a5a;">
+        <div class="container">
+            <!-- Brand: image replaces text; hidden text kept for accessibility -->
+            <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="images/logo.png"
+                alt="FridgeMate"
+                width="140" height="55"
+                class="d-inline-block align-text-top me-2">
+            <span class="visually-hidden">FridgeMate</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+                    aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item me-2">
+                <a class="btn btn-outline-light" href="#signin">Sign in</a>
+                </li>
+                <li class="nav-item">
+                <a class="btn btn-light" href="#signup">Sign up</a>
+                </li>
+            </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Fridge list (centered with comfortable margins) -->
+    <main class="container-fluid px-0 py-4">
+      <!-- Use a centered container so cards read well on large screens but still span edge-to-edge visually -->
+      <div class="container">
+        <p class="fs-3">My Fridges</p>
+        <!-- Fridge card 1 -->
+        <a href="#" class="text-decoration-none text-body">
+          <div class="card mb-3 w-100 shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="card-title mb-1">Flatmates Fridge</h5>
+                <p class="card-text text-muted mb-0">Shared with: Alice, Bob, Carol — Updated: 2 days ago</p>
+              </div>
+              <div class="text-end">
+                <span class="badge bg-secondary rounded-pill">4 members</span>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Fridge card 2 -->
+        <a href="#" class="text-decoration-none text-body">
+          <div class="card mb-3 w-100 shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="card-title mb-1">Office Kitchen</h5>
+                <p class="card-text text-muted mb-0">Shared with: Team Lunch Club — Updated: today</p>
+              </div>
+              <div class="text-end">
+                <span class="badge bg-secondary rounded-pill">8 members</span>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Fridge card 3 -->
+        <a href="#" class="text-decoration-none text-body">
+          <div class="card mb-3 w-100 shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="card-title mb-1">Gym Café Fridge</h5>
+                <p class="card-text text-muted mb-0">Shared with: Café staff — Last checked: 3 hours ago</p>
+              </div>
+              <div class="text-end">
+                <span class="badge bg-secondary rounded-pill">3 members</span>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Create a Fridge card (last) -->
+        <a href="#" class="text-decoration-none text-body">
+          <div class="card mb-3 w-100 shadow-sm" style="border-color:#ff6767;">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="card-title mb-0">Create a Fridge</h5>
+              </div>
+              <div>
+                <span class="fs-2 fw-bold">+</span>
+              </div>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </main>
+
+    <!-- Bootstrap 5.0 JS bundle (optional for interactive components) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b0cwZq6JLQw6p8vKNwqXw1rGkq6l3zFq6e4ZgQkqg5B3v6G5G9Z3G7e9z1V7Z8A9" crossorigin="anonymous"></script>
+  </body>
+</html>
