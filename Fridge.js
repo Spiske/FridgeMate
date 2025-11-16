@@ -111,13 +111,14 @@ async function addProductToDatabase(productName, price, barcode = null) {
     return newDocRef.id;
 }
 
-/* -------------------- UI wiring - UPDATED FOR BARCODE SCANNER -------------------- */
+/* -------------------- UI wiring - BARCODE SCANNER (NO FILE INPUTS) -------------------- */
 const fridgeCameraBtn = document.getElementById('fridgeCameraBtn');
-const fridgePhoto = document.getElementById('fridgePhoto');
 const fridgeProductName = document.getElementById('fridgeProductName');
 
 if (fridgeCameraBtn) {
-    fridgeCameraBtn.addEventListener('click', async () => {
+    fridgeCameraBtn.addEventListener('click', async (e) => {
+        e.preventDefault(); // Prevent any default behavior
+
         try {
             fridgeCameraBtn.disabled = true;
             fridgeCameraBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Scanning...';
@@ -151,7 +152,9 @@ const dbProductName = document.getElementById('dbProductName');
 let scannedBarcodeForDB = null;
 
 if (barcodeCameraBtn) {
-    barcodeCameraBtn.addEventListener('click', async () => {
+    barcodeCameraBtn.addEventListener('click', async (e) => {
+        e.preventDefault(); // Prevent any default behavior
+
         try {
             barcodeCameraBtn.disabled = true;
             barcodeCameraBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
