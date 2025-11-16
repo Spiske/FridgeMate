@@ -9,7 +9,9 @@ import {
   Timestamp,
   onSnapshot,
   query,
-  orderBy
+  orderBy,
+  updateDoc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 /* -------------------- Firebase init -------------------- */
@@ -321,6 +323,90 @@ function getInventoryContainer() {
   return null;
 }
 
+/* -------------------- Modal wiring -------------------- */
+const editModalEl = document.getElementById('editQuantityModal');
+let editModalInstance = null;
+if (editModalEl && window.bootstrap) {
+  editModalInstance = new bootstrap.Modal(editModalEl, { backdrop: 'static' });
+}
+
+function openEditModal(itemId, data = {}) {
+  const idInput = document.getElementById('editItemId');
+  const nameDiv = document.getElementById('editItemName');
+  const qtyInput = document.getElementById('editQuantityInput');
+  const alertDiv = document.getElementById('editModalAlert');
+
+  if (!idInput || !nameDiv || !qtyInput) {
+    console.warn('Edit modal elements not found.');
+    return;
+  }
+
+  idInput.value = itemId || '';
+  nameDiv.textContent = data.productName || 'Unnamed';
+  const q = (data.quantity !== undefined && data.quantity !== null) ? data.quantity : 1;
+  qtyInput.value = q;
+  alertDiv.classList.add('d-none');
+  alertDiv.textContent = '';
+
+  // show modal
+  if (editModalInstance) {
+    editModalInstance.show();
+    // focus the input after show (small timer to ensure element is visible)
+    setTimeout(() => qtyInput.select(), 200);
+  } else {
+    console.warn('Bootstrap modal instance not available.');
+  }
+}
+
+async function saveEditQuantity(evt) {
+  evt.preventDefault();
+  const idInput = document.getElementById('editItemId');
+  const qtyInput = document.getElementById('editQuantityInput');
+  const alertDiv = document.getElementById('editModalAlert');
+
+  if (!idInput || !qtyInput) return;
+
+  const itemId = idInput.value;
+  const raw = qtyInput.value;
+  const parsed = parseInt(raw, 10);
+  if (Number.isNaN(parsed) || parsed < 0) {
+    alertDiv.textContent = 'Please enter a valid quantity (0 or greater).';
+    alertDiv.classList.remove('d-none');
+    return;
+  }
+
+  try {
+    const fridgeId = getFridgeIdFromUrl();
+    if (!fridgeId) throw new Error('Missing fridge id in URL (expected ?id=...)');
+
+    // Document reference for inventory item
+    const invDocRef = doc(db, 'Fridges', fridgeId, 'Inventory', itemId);
+
+    if (parsed === 0) {
+      // delete the inventory doc
+      await deleteDoc(invDocRef);
+      showAlert('Item removed from inventory.', 'success');
+    } else {
+      // update quantity field only
+      await updateDoc(invDocRef, { quantity: parsed });
+      showAlert('Quantity updated.', 'success');
+    }
+
+    // close modal
+    if (editModalInstance) editModalInstance.hide();
+  } catch (err) {
+    console.error('Failed to save edited quantity:', err);
+    alertDiv.textContent = err.message || 'Failed to save changes.';
+    alertDiv.classList.remove('d-none');
+  }
+}
+
+const editQuantityForm = document.getElementById('editQuantityForm');
+if (editQuantityForm) {
+  editQuantityForm.addEventListener('submit', saveEditQuantity);
+}
+
+/* -------------------- Inventory rendering (modified to open modal) -------------------- */
 function createInventoryCard(docId, data) {
   const wrapper = document.createElement('div');
   wrapper.className = 'card mb-2';
@@ -331,9 +417,10 @@ function createInventoryCard(docId, data) {
   const left = document.createElement('div');
   left.className = 'd-flex align-items-baseline';
 
+  const qtyDisplay = (data.quantity !== undefined && data.quantity !== null) ? data.quantity : 1;
   const title = document.createElement('h5');
   title.className = 'mb-0 me-3';
-  title.textContent = data.productName || 'Unnamed';
+  title.textContent = `${data.productName || 'Unnamed'} (${qtyDisplay})`;
 
   const small = document.createElement('div');
   small.className = 'small';
@@ -343,21 +430,18 @@ function createInventoryCard(docId, data) {
 
   const metaSpan = document.createElement('span');
   metaSpan.className = 'text-muted ms-2';
-
-  const addedBy = data.addedBy || null; // if you later add addedBy to your schema, this will show
   const addedAtText = data.addedAt ? timeAgo(data.addedAt) : '';
-  metaSpan.textContent = addedBy ? `Added by ${addedBy} (${addedAtText})` : (addedAtText ? `Added ${addedAtText}` : '');
+  metaSpan.textContent = addedAtText ? `Added ${addedAtText}` : '';
 
-  // expiry display
   const expirySpan = document.createElement('div');
   if (data.expiry) {
     const expiryDate = (data.expiry.toDate) ? data.expiry.toDate() : new Date(data.expiry);
     const now = new Date();
     if (expiryDate < now) {
-        expirySpan.className = 'small text-danger ms-3';
+      expirySpan.className = 'small text-danger ms-3';
       expirySpan.textContent = `Expired: ${formatDate(data.expiry)}`;
     } else {
-        expirySpan.className = 'small text-primary ms-3';
+      expirySpan.className = 'small text-primary ms-3';
       expirySpan.textContent = `Expires: ${formatDate(data.expiry)}`;
     }
   }
@@ -378,12 +462,11 @@ function createInventoryCard(docId, data) {
   editBtn.style.backgroundColor = '#fe5a5a';
   editBtn.style.borderColor = '#fe5a5a';
   editBtn.style.color = '#fff';
-  editBtn.setAttribute('aria-label', `Edit ${data.productName || ''}`);
+  editBtn.setAttribute('aria-label', `Edit ${data.productName || ''} (${qtyDisplay})`);
   editBtn.textContent = '✏️';
+  // Open modal with current quantity when clicked
   editBtn.addEventListener('click', () => {
-    // stub: implement edit flow (open modal or inline edit)
-    console.log('Edit', docId, data);
-    showAlert('Edit action not implemented yet.', 'info');
+    openEditModal(docId, data);
   });
 
   const infoBtn = document.createElement('button');
@@ -392,12 +475,11 @@ function createInventoryCard(docId, data) {
   infoBtn.style.backgroundColor = '#fe5a5a';
   infoBtn.style.borderColor = '#fe5a5a';
   infoBtn.style.color = '#fff';
-  infoBtn.setAttribute('aria-label', `Info ${data.productName || ''}`);
+  infoBtn.setAttribute('aria-label', `Info ${data.productName || ''} (${qtyDisplay})`);
   infoBtn.textContent = 'ℹ️';
   infoBtn.addEventListener('click', () => {
-    // stub: show details (could open a modal with quantity, price, expiry, productId...)
     const lines = [];
-    lines.push(`Name: ${data.productName || '—'}`);
+    lines.push(`Name: ${data.productName || '—'} (${qtyDisplay})`);
     lines.push(`Quantity: ${data.quantity ?? '—'}`);
     lines.push(`Price: ${data.price !== undefined && data.price !== null ? '$' + Number(data.price).toFixed(2) : '—'}`);
     if (data.expiry) lines.push(`Expiry: ${formatDate(data.expiry)}`);
@@ -415,6 +497,7 @@ function createInventoryCard(docId, data) {
   return wrapper;
 }
 
+/* -------------------- Inventory listener / startInventoryListener (unchanged except using new createInventoryCard) -------------------- */
 let unsubscribeInventory = null;
 
 function startInventoryListener() {
@@ -425,7 +508,6 @@ function startInventoryListener() {
     return;
   }
 
-  // Clear placeholders immediately while we attach listener
   container.innerHTML = '';
 
   if (!fridgeId) {
@@ -433,15 +515,11 @@ function startInventoryListener() {
     return;
   }
 
-  const fridgeDocRef = doc(db, 'Fridges', fridgeId);
-  const inventoryColRef = collection(fridgeDocRef, 'Inventory');
-  const q = query(inventoryColRef, orderBy('addedAt', 'desc'));
+  const q = query(collection(doc(db, 'Fridges', fridgeId), 'Inventory'), orderBy('addedAt', 'desc'));
 
-  // detach previous listener if any
   if (unsubscribeInventory) unsubscribeInventory();
 
   unsubscribeInventory = onSnapshot(q, (snapshot) => {
-    // clear and re-render
     container.innerHTML = '';
 
     if (snapshot.empty) {
@@ -460,7 +538,7 @@ function startInventoryListener() {
   });
 }
 
-// start listening once the page is ready
+/* -------------------- start listening on DOMContentLoaded and cleanup -------------------- */
 window.addEventListener('DOMContentLoaded', () => {
   try {
     startInventoryListener();
@@ -469,9 +547,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-/* -------------------- Optional: cleanup when navigating away -------------------- */
 window.addEventListener('beforeunload', () => {
   if (unsubscribeInventory) unsubscribeInventory();
 });
-
-/* -------------------- END OF FILE -------------------- */
