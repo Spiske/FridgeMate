@@ -3,119 +3,91 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Your Fridges — Shared Fridge App (placeholder)</title>
-    <!-- Bootstrap 5.0 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Your Fridges — Shared Fridge App (fixed modal)</title>
+
+    <!-- Bootstrap 5 CSS (no SRI here to avoid accidental blocking) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   </head>
   <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark border-bottom" style="background-color:#fe5a5a;">
-    <div class="container">
+      <div class="container">
         <div class="d-flex align-items-center gap-4">
-        <a class="navbar-brand d-flex align-items-center" href="/">
+          <a class="navbar-brand d-flex align-items-center" href="/">
             <img src="images/logo.png" alt="FridgeMate" width="140" height="55" class="d-inline-block align-text-top">
             <span class="visually-hidden">FridgeMate</span>
-        </a>
+          </a>
 
-        <ul class="navbar-nav flex-row align-items-center">
-            <li class="nav-item">
-            <a class="nav-link px-2 text-white" href="/index.html" aria-current="page">Home</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link px-2 text-white" href="/FridgeList.html">My Fridges</a>
-            </li>
-        </ul>
+          <ul class="navbar-nav flex-row align-items-center">
+            <li class="nav-item"><a class="nav-link px-2 text-white" href="/index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link px-2 text-white" href="/FridgeList.html">My Fridges</a></li>
+          </ul>
         </div>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
                 aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+          <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- auth area: script will update this based on auth state -->
         <div class="collapse navbar-collapse" id="navMenu">
-        <ul id="authArea" class="navbar-nav ms-auto align-items-lg-center">
-            <!-- fallback (no-JS) or initial state: signed-out buttons -->
-            <li class="nav-item me-2">
-            <a class="btn btn-outline-light" href="/signin.html">Sign in</a>
-            </li>
-            <li class="nav-item">
-            <a class="btn btn-light" href="/signup.html">Sign up</a>
-            </li>
-        </ul>
+          <ul id="authArea" class="navbar-nav ms-auto align-items-lg-center">
+            <li class="nav-item me-2"><a class="btn btn-outline-light" href="/signin.html">Sign in</a></li>
+            <li class="nav-item"><a class="btn btn-light" href="/signup.html">Sign up</a></li>
+          </ul>
         </div>
-    </div>
+      </div>
     </nav>
 
-    <!-- Fridge list (centered with comfortable margins) -->
     <main class="container-fluid px-0 py-4">
-      <!-- Use a centered container so cards read well on large screens but still span edge-to-edge visually -->
-      <div class="container">
+    <div class="container">
         <p class="fs-3">My Fridges</p>
-        <!-- Fridge card 1 -->
-        <a href="Fridge.html" class="text-decoration-none text-body">
-          <div class="card mb-3 w-100 shadow-sm">
-            <div class="card-body d-flex justify-content-between align-items-center">
-              <div>
-                <h5 class="card-title mb-1">Flatmates Fridge</h5>
-                <p class="card-text text-muted mb-0">Shared with: Alice, Bob, Carol — Updated: 2 days ago</p>
-              </div>
-              <div class="text-end">
-                <span class="badge bg-secondary rounded-pill">4 members</span>
-              </div>
-            </div>
-          </div>
-        </a>
 
-        <!-- Fridge card 2 -->
-        <a href="Fridge.html" class="text-decoration-none text-body">
-          <div class="card mb-3 w-100 shadow-sm">
-            <div class="card-body d-flex justify-content-between align-items-center">
-              <div>
-                <h5 class="card-title mb-1">Office Kitchen</h5>
-                <p class="card-text text-muted mb-0">Shared with: Team Lunch Club — Updated: today</p>
-              </div>
-              <div class="text-end">
-                <span class="badge bg-secondary rounded-pill">8 members</span>
-              </div>
-            </div>
-          </div>
-        </a>
+        <!-- Dynamic fridge cards will be inserted here (above the Create button) -->
+        <div id="fridgesContainer"></div>
 
-        <!-- Fridge card 3 -->
-        <a href="Fridge.html" class="text-decoration-none text-body">
-          <div class="card mb-3 w-100 shadow-sm">
-            <div class="card-body d-flex justify-content-between align-items-center">
-              <div>
-                <h5 class="card-title mb-1">Gym Café Fridge</h5>
-                <p class="card-text text-muted mb-0">Shared with: Café staff — Last checked: 3 hours ago</p>
-              </div>
-              <div class="text-end">
-                <span class="badge bg-secondary rounded-pill">3 members</span>
-              </div>
-            </div>
-          </div>
-        </a>
+        <!-- Create a Fridge trigger: use a button (no navigation) -->
+        <button type="button"
+                id="createFridgeBtnCard"
+                class="card mb-3 w-100 shadow-sm border-danger text-start"
+                data-bs-toggle="modal" data-bs-target="#createFridgeModal"
+                aria-label="Create a Fridge">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div><h5 class="card-title mb-0">Create a Fridge</h5></div>
+            <div><span class="fs-2 fw-bold">+</span></div>
+        </div>
+        </button>
 
-        <!-- Create a Fridge card (last) -->
-        <a href="Fridge.html" class="text-decoration-none text-body">
-          <div class="card mb-3 w-100 shadow-sm" style="border-color:#ff6767;">
-            <div class="card-body d-flex justify-content-between align-items-center">
-              <div>
-                <h5 class="card-title mb-0">Create a Fridge</h5>
-              </div>
-              <div>
-                <span class="fs-2 fw-bold">+</span>
-              </div>
-            </div>
-          </div>
-        </a>
-
-      </div>
+    </div>
     </main>
 
-    <!-- Bootstrap 5.0 JS bundle (optional for interactive components) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b0cwZq6JLQw6p8vKNwqXw1rGkq6l3zFq6e4ZgQkqg5B3v6G5G9Z3G7e9z1V7Z8A9" crossorigin="anonymous"></script>
+
+    <!-- Create Fridge Modal -->
+    <div class="modal fade" id="createFridgeModal" tabindex="-1" aria-labelledby="createFridgeLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <form novalidate id="createFridgeForm">
+            <div class="modal-header">
+              <h5 class="modal-title" id="createFridgeLabel">Create a Fridge</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="fridgeName" class="form-label">Fridge name</label>
+                <input type="text" class="form-control" id="fridgeName" name="fridgeName" placeholder="e.g. Weekend Cabin" required>
+                <div class="invalid-feedback">Please enter a fridge name.</div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button id="createFridgeBtn" type="submit" class="btn btn-primary">Create</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS bundle (includes Popper). Keep BEFORE your own scripts. -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="FridgeList.js" type="module"></script>
   </body>
 </html>
