@@ -241,6 +241,7 @@ onAuthStateChanged(auth, (user) => {
     renderSignedIn(user);
   } else {
     userUID = null;
+    window.location.replace("/index.html");
     renderSignedOut();
   }
 });

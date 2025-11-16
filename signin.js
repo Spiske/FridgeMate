@@ -74,12 +74,11 @@ signinBtn.addEventListener('click', (e) => {
   signInWithGoogle();
 });
 
-// Optional: monitor auth state to react to already-signed-in users
+// Monitor auth state to react to already-signed-in users
 onAuthStateChanged(auth, (user) => {
   if (user) {
     console.log('User already signed in:', user.uid, user.email);
-    // You might redirect immediately if user is already authenticated:
-    // window.location.href = '/dashboard.html';
+    window.location.replace("/FridgeList.html");
   } else {
     // user signed out
   }

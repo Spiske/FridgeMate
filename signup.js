@@ -6,6 +6,7 @@ import {
   signInWithRedirect,
   getRedirectResult,
   setPersistence,
+  onAuthStateChanged,
   browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
@@ -93,5 +94,15 @@ signupBtn.addEventListener("click", async () => {
       console.error("Redirect fallback failed:", err2);
       showError("Unable to start sign-in flow. Check console for details.");
     }
+  }
+});
+
+// Monitor auth state to react to already-signed-in users
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log('User already signed in:', user.uid, user.email);
+    window.location.replace("/FridgeList.html");
+  } else {
+    // user signed out
   }
 });

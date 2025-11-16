@@ -1,50 +1,477 @@
-// fridge photo
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  getDocs,
+  serverTimestamp,
+  Timestamp,
+  onSnapshot,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+/* -------------------- Firebase init -------------------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyAp7TebsGhYqoMv6IER8XZ-fwyqwi9KGt4",
+  authDomain: "fridge-mate-31e97.firebaseapp.com",
+  projectId: "fridge-mate-31e97",
+  storageBucket: "fridge-mate-31e97.firebasestorage.app",
+  messagingSenderId: "543736415860",
+  appId: "1:543736415860:web:312b6729c79af1221d7321"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* -------------------- helpers -------------------- */
+function getFridgeIdFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('id');
+}
+
+/**
+ * Basic product-name sanitisation for searching:
+ * - Trim
+ * - Collapse multiple spaces
+ * - Remove punctuation (keeps letters/numbers/spaces)
+ * - Remove diacritics
+ * - Lowercase
+ */
+function sanitizeName(str) {
+  if (!str) return '';
+  let s = String(str).trim().normalize ? str.normalize('NFD') : str;
+  s = s.replace(/\p{Diacritic}/gu, '').toLowerCase();
+  s = s.replace(/[^\p{L}\p{N}\s]/gu, '');
+  s = s.replace(/\s+/g, ' ').trim();
+  return s;
+}
+
+function formatCurrency(price) {
+  if (price === null || price === undefined) return 'Price: —';
+  if (typeof price !== 'number') {
+    const n = Number(price);
+    if (Number.isFinite(n)) price = n;
+    else return 'Price: —';
+  }
+  // Basic USD formatting. Change as needed.
+  return `Price: $${price.toFixed(2)}`;
+}
+
+function timeAgo(date) {
+  if (!date) return '';
+  const now = new Date();
+  const d = (date.toDate) ? date.toDate() : new Date(date);
+  const seconds = Math.floor((now - d) / 1000);
+  if (seconds < 60) return `${seconds} second${seconds===1?'':'s'} ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} minute${minutes===1?'':'s'} ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours===1?'':'s'} ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} day${days===1?'':'s'} ago`;
+  // fallback to absolute date for older items
+  return d.toLocaleDateString();
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  const dateObj = (d.toDate) ? d.toDate() : new Date(d);
+  return dateObj.toLocaleDateString();
+}
+
+/* -------------------- Firestore writes (unchanged) -------------------- */
+async function addProductToDatabase(productName, price) {
+  const fridgeId = getFridgeIdFromUrl();
+  if (!fridgeId) throw new Error('Missing fridge id in URL (expected ?id=...)');
+
+  const fridgeDocRef = doc(db, 'Fridges', fridgeId);
+  const databaseColRef = collection(fridgeDocRef, 'Database');
+
+  const parsedPrice = (price === '' || price === null || price === undefined)
+    ? null
+    : Number(price);
+
+  const data = {
+    productName: productName || '',
+    price: Number.isFinite(parsedPrice) ? parsedPrice : null,
+    createdAt: serverTimestamp()
+  };
+
+  const newDocRef = await addDoc(databaseColRef, data);
+  return newDocRef.id;
+}
+
+/* -------------------- UI wiring (keeps your existing UI behaviour) -------------------- */
 const fridgeCameraBtn = document.getElementById('fridgeCameraBtn');
 const fridgePhoto = document.getElementById('fridgePhoto');
-fridgeCameraBtn.addEventListener('click', () => fridgePhoto.click());
+if (fridgeCameraBtn && fridgePhoto) {
+  fridgeCameraBtn.addEventListener('click', () => fridgePhoto.click());
+}
 
-// barcode file
 const barcodeCameraBtn = document.getElementById('barcodeCameraBtn');
 const barcodeFile = document.getElementById('barcodeFile');
 const barcodeFileName = document.getElementById('barcodeFileName');
-
-barcodeCameraBtn.addEventListener('click', () => barcodeFile.click());
-
-barcodeFile.addEventListener('change', (e) => {
+if (barcodeCameraBtn && barcodeFile) {
+  barcodeCameraBtn.addEventListener('click', () => barcodeFile.click());
+  barcodeFile.addEventListener('change', (e) => {
     const f = e.target.files[0];
-    barcodeFileName.textContent = f ? f.name : 'No file chosen';
-});
-
-// Update 'Add to Database & Fridge' button text when quantity changes on fridge form
-const fridgeQty = document.getElementById('fridgeQuantity');
-const dbAddAndFridgeBtn = document.getElementById('dbAddAndFridge');
-
-const updateDbAddLabel = () => {
-    const val = (fridgeQty && fridgeQty.value) ? parseInt(fridgeQty.value, 10) : 1;
-    const safe = (Number.isInteger(val) && val > 0) ? val : 1;
-    dbAddAndFridgeBtn.textContent = `Add to Database & Fridge (qt: ${safe})`;
-};
-
-if (fridgeQty) {
-    fridgeQty.addEventListener('input', updateDbAddLabel);
-    updateDbAddLabel();
+    if (barcodeFileName) barcodeFileName.textContent = f ? f.name : 'No file chosen';
+  });
 }
 
-// Basic form submit prevention (replace with real submit logic)
-document.getElementById('fridgeForm').addEventListener('submit', (e) => {
+const fridgeQty = document.getElementById('fridgeQuantity');
+const dbAddAndFridgeBtn = document.getElementById('dbAddAndFridge');
+const updateDbAddLabel = () => {
+  const val = (fridgeQty && fridgeQty.value) ? parseInt(fridgeQty.value, 10) : 1;
+  const safe = (Number.isInteger(val) && val > 0) ? val : 1;
+  if (dbAddAndFridgeBtn) dbAddAndFridgeBtn.textContent = `Add to Database & Fridge (qt: ${safe})`;
+};
+if (fridgeQty) {
+  fridgeQty.addEventListener('input', updateDbAddLabel);
+  updateDbAddLabel();
+}
+
+/* -------------------- Form handlers that write to Firestore -------------------- */
+function showAlert(message, kind = 'info') {
+  alert(`${kind.toUpperCase()}: ${message}`);
+}
+
+const dbForm = document.getElementById('dbForm');
+if (dbForm) {
+  dbForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    alert('Add to Fridge submitted — wire this to your backend.');
-});
 
-document.getElementById('dbForm').addEventListener('submit', (e) => {
+    const btn = dbForm.querySelector('button[type="submit"]');
+    const productInput = document.getElementById('dbProductName');
+    const priceInput = document.getElementById('dbPrice');
+
+    const productName = productInput ? productInput.value.trim() : '';
+    const priceVal = priceInput ? priceInput.value.trim() : '';
+
+    if (!productName) {
+      showAlert('Please enter a product name.', 'error');
+      return;
+    }
+
+    if (priceVal !== '' && Number.isNaN(Number(priceVal))) {
+      showAlert('Price must be a number (or left empty).', 'error');
+      return;
+    }
+
+    if (btn) btn.disabled = true;
+
+    try {
+      const newId = await addProductToDatabase(productName, priceVal);
+      showAlert(`Saved to database (id: ${newId}).`, 'success');
+      if (productInput) productInput.value = '';
+      if (priceInput) priceInput.value = '';
+    } catch (err) {
+      console.error('Error adding to DB:', err);
+      showAlert(err.message || 'Failed to add to database.', 'error');
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+}
+
+const dbAddAndFridge = document.getElementById('dbAddAndFridge');
+if (dbAddAndFridge) {
+  dbAddAndFridge.addEventListener('click', async () => {
+    const dbProductInput = document.getElementById('dbProductName');
+    const fridgeProductInput = document.getElementById('fridgeProductName');
+    const dbPriceInput = document.getElementById('dbPrice');
+
+    const productName = (dbProductInput && dbProductInput.value.trim())
+      ? dbProductInput.value.trim()
+      : (fridgeProductInput ? fridgeProductInput.value.trim() : '');
+
+    const priceVal = dbPriceInput ? dbPriceInput.value.trim() : '';
+
+    if (!productName) {
+      showAlert('Please enter a product name (either in Database or Fridge form).', 'error');
+      return;
+    }
+
+    if (priceVal !== '' && Number.isNaN(Number(priceVal))) {
+      showAlert('Price must be a number (or left empty).', 'error');
+      return;
+    }
+
+    dbAddAndFridge.disabled = true;
+    try {
+      const newId = await addProductToDatabase(productName, priceVal);
+      showAlert(`Saved to database (id: ${newId}).`, 'success');
+    } catch (err) {
+      console.error('Error adding to DB & Fridge:', err);
+      showAlert(err.message || 'Failed to add to database.', 'error');
+    } finally {
+      dbAddAndFridge.disabled = false;
+    }
+  });
+}
+
+/* -------------------- Add to Fridge (search Database, then add to Inventory) -------------------- */
+const fridgeForm = document.getElementById('fridgeForm');
+if (fridgeForm) {
+  fridgeForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    alert('Add to Database submitted — wire this to your backend.');
+
+    const submitBtn = fridgeForm.querySelector('button[type="submit"]');
+    const productInput = document.getElementById('fridgeProductName');
+    const qtyInput = document.getElementById('fridgeQuantity');
+    const expiryInput = document.getElementById('fridgeExpiry');
+
+    const rawProduct = productInput ? productInput.value.trim() : '';
+    if (!rawProduct) {
+      showAlert('Please enter a product name.', 'error');
+      return;
+    }
+
+    let qty = 1;
+    if (qtyInput && qtyInput.value !== '') {
+      const parsed = parseInt(qtyInput.value, 10);
+      qty = (Number.isInteger(parsed) && parsed > 0) ? parsed : 1;
+    }
+
+    const expiryVal = expiryInput ? expiryInput.value : '';
+
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+      const fridgeId = getFridgeIdFromUrl();
+      if (!fridgeId) {
+        throw new Error('Missing fridge id in URL; expected ?id=FRIDGE_ID');
+      }
+
+      const fridgeDocRef = doc(db, 'Fridges', fridgeId);
+      const databaseColRef = collection(fridgeDocRef, 'Database');
+
+      const snapshot = await getDocs(databaseColRef);
+      if (snapshot.empty) {
+        showAlert('No products found in this fridge database. Add the product to Database first.', 'error');
+        return;
+      }
+
+      const targetSan = sanitizeName(rawProduct);
+      let matchedDoc = null;
+
+      snapshot.forEach(d => {
+        const dData = d.data() || {};
+        const candidateName = dData.productName || '';
+        if (sanitizeName(candidateName) === targetSan && !matchedDoc) {
+          matchedDoc = { id: d.id, data: dData };
+        }
+      });
+
+      if (!matchedDoc) {
+        showAlert('Product not found in Database (try adding it first or check spelling).', 'error');
+        return;
+      }
+
+      const inventoryColRef = collection(fridgeDocRef, 'Inventory');
+
+      const inventoryData = {
+        productId: matchedDoc.id,
+        productName: matchedDoc.data.productName || rawProduct,
+        price: (matchedDoc.data.price !== undefined && matchedDoc.data.price !== null)
+          ? matchedDoc.data.price
+          : null,
+        quantity: qty,
+        addedAt: serverTimestamp(),
+        expiry: null
+      };
+
+      if (expiryVal) {
+        const d = new Date(expiryVal);
+        if (!Number.isNaN(d.getTime())) {
+          inventoryData.expiry = Timestamp.fromDate(d);
+        }
+      }
+
+      const newInvRef = await addDoc(inventoryColRef, inventoryData);
+
+      showAlert(`Added to fridge inventory (id: ${newInvRef.id})`, 'success');
+
+      if (productInput) productInput.value = '';
+      if (qtyInput) qtyInput.value = '';
+      if (expiryInput) expiryInput.value = '';
+    } catch (err) {
+      console.error('Error adding to fridge inventory:', err);
+      showAlert(err.message || 'Failed to add to fridge inventory.', 'error');
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
+  });
+}
+
+/* -------------------- NEW: Dynamic Fridge Inventory rendering -------------------- */
+function getInventoryContainer() {
+  // Find the card titled "Fridge Inventory" and return its .mt-3 container
+  const titles = document.querySelectorAll('h5.card-title');
+  for (const t of titles) {
+    if (t.textContent && t.textContent.trim() === 'Fridge Inventory') {
+      const body = t.closest('.card-body');
+      if (!body) continue;
+      const container = body.querySelector('.mt-3');
+      if (container) return container;
+    }
+  }
+  return null;
+}
+
+function createInventoryCard(docId, data) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'card mb-2';
+
+  const body = document.createElement('div');
+  body.className = 'card-body d-flex align-items-center justify-content-between';
+
+  const left = document.createElement('div');
+  left.className = 'd-flex align-items-baseline';
+
+  const title = document.createElement('h5');
+  title.className = 'mb-0 me-3';
+  title.textContent = data.productName || 'Unnamed';
+
+  const small = document.createElement('div');
+  small.className = 'small';
+
+  const priceSpan = document.createElement('span');
+  priceSpan.textContent = formatCurrency(data.price);
+
+  const metaSpan = document.createElement('span');
+  metaSpan.className = 'text-muted ms-2';
+
+  const addedBy = data.addedBy || null; // if you later add addedBy to your schema, this will show
+  const addedAtText = data.addedAt ? timeAgo(data.addedAt) : '';
+  metaSpan.textContent = addedBy ? `Added by ${addedBy} (${addedAtText})` : (addedAtText ? `Added ${addedAtText}` : '');
+
+  // expiry display
+  const expirySpan = document.createElement('div');
+  if (data.expiry) {
+    const expiryDate = (data.expiry.toDate) ? data.expiry.toDate() : new Date(data.expiry);
+    const now = new Date();
+    if (expiryDate < now) {
+        expirySpan.className = 'small text-danger ms-3';
+      expirySpan.textContent = `Expired: ${formatDate(data.expiry)}`;
+    } else {
+        expirySpan.className = 'small text-primary ms-3';
+      expirySpan.textContent = `Expires: ${formatDate(data.expiry)}`;
+    }
+  }
+
+  small.appendChild(priceSpan);
+  small.appendChild(metaSpan);
+  if (expirySpan.textContent) small.appendChild(expirySpan);
+
+  left.appendChild(title);
+  left.appendChild(small);
+
+  const right = document.createElement('div');
+  right.className = 'd-flex';
+
+  const editBtn = document.createElement('button');
+  editBtn.type = 'button';
+  editBtn.className = 'btn btn-sm me-1';
+  editBtn.style.backgroundColor = '#fe5a5a';
+  editBtn.style.borderColor = '#fe5a5a';
+  editBtn.style.color = '#fff';
+  editBtn.setAttribute('aria-label', `Edit ${data.productName || ''}`);
+  editBtn.textContent = '✏️';
+  editBtn.addEventListener('click', () => {
+    // stub: implement edit flow (open modal or inline edit)
+    console.log('Edit', docId, data);
+    showAlert('Edit action not implemented yet.', 'info');
+  });
+
+  const infoBtn = document.createElement('button');
+  infoBtn.type = 'button';
+  infoBtn.className = 'btn btn-sm';
+  infoBtn.style.backgroundColor = '#fe5a5a';
+  infoBtn.style.borderColor = '#fe5a5a';
+  infoBtn.style.color = '#fff';
+  infoBtn.setAttribute('aria-label', `Info ${data.productName || ''}`);
+  infoBtn.textContent = 'ℹ️';
+  infoBtn.addEventListener('click', () => {
+    // stub: show details (could open a modal with quantity, price, expiry, productId...)
+    const lines = [];
+    lines.push(`Name: ${data.productName || '—'}`);
+    lines.push(`Quantity: ${data.quantity ?? '—'}`);
+    lines.push(`Price: ${data.price !== undefined && data.price !== null ? '$' + Number(data.price).toFixed(2) : '—'}`);
+    if (data.expiry) lines.push(`Expiry: ${formatDate(data.expiry)}`);
+    if (data.addedAt) lines.push(`Added: ${timeAgo(data.addedAt)}`);
+    showAlert(lines.join('\n'), 'info');
+  });
+
+  right.appendChild(editBtn);
+  right.appendChild(infoBtn);
+
+  body.appendChild(left);
+  body.appendChild(right);
+  wrapper.appendChild(body);
+
+  return wrapper;
+}
+
+let unsubscribeInventory = null;
+
+function startInventoryListener() {
+  const fridgeId = getFridgeIdFromUrl();
+  const container = getInventoryContainer();
+  if (!container) {
+    console.warn('Could not locate Fridge Inventory container in DOM. Please ensure the markup exists.');
+    return;
+  }
+
+  // Clear placeholders immediately while we attach listener
+  container.innerHTML = '';
+
+  if (!fridgeId) {
+    container.innerHTML = '<div class="text-muted">Missing fridge id in URL. Inventory cannot be loaded.</div>';
+    return;
+  }
+
+  const fridgeDocRef = doc(db, 'Fridges', fridgeId);
+  const inventoryColRef = collection(fridgeDocRef, 'Inventory');
+  const q = query(inventoryColRef, orderBy('addedAt', 'desc'));
+
+  // detach previous listener if any
+  if (unsubscribeInventory) unsubscribeInventory();
+
+  unsubscribeInventory = onSnapshot(q, (snapshot) => {
+    // clear and re-render
+    container.innerHTML = '';
+
+    if (snapshot.empty) {
+      container.innerHTML = '<div class="text-muted">No items in inventory.</div>';
+      return;
+    }
+
+    snapshot.forEach(docSnap => {
+      const d = docSnap.data() || {};
+      const card = createInventoryCard(docSnap.id, d);
+      container.appendChild(card);
+    });
+  }, (err) => {
+    console.error('Inventory listener error:', err);
+    container.innerHTML = `<div class="text-danger">Failed to load inventory: ${err.message}</div>`;
+  });
+}
+
+// start listening once the page is ready
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    startInventoryListener();
+  } catch (err) {
+    console.error('Error starting inventory listener:', err);
+  }
 });
 
-document.getElementById('dbAddAndFridge').addEventListener('click', () => {
-    alert('Add to Database & Fridge clicked — wire this to your backend.');
+/* -------------------- Optional: cleanup when navigating away -------------------- */
+window.addEventListener('beforeunload', () => {
+  if (unsubscribeInventory) unsubscribeInventory();
 });
 
-document.getElementById('viewDbItems').addEventListener('click', () => {
-    alert('View all Database Items — implement navigation to DB list.');
-});
+/* -------------------- END OF FILE -------------------- */
