@@ -1,0 +1,1 @@
+export type { AutoFocusConfiguration, DateValidationConfiguration, DocumentDataExtractorCommonConfiguration, DocumentDataExtractorConfigurationElement, EuropeanHealthInsuranceCardConfiguration, EuropeanHealthInsuranceCardIssuingCountryValues, EuropeanHealthInsuranceCardIssuingCountry, GlareDetectionConfiguration, MrzFallbackConfiguration, } from "../../core-types";

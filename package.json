@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "scanbot-web-sdk": "^8.0.0"
+  }
+}
